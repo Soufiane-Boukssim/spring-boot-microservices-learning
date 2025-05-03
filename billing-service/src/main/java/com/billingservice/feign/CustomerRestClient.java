@@ -15,6 +15,7 @@ public interface CustomerRestClient {
     Customer getCustomerById(@PathVariable Long id);
 
     @GetMapping("/customers")
+    @CircuitBreaker(name = "customerServiceCB", fallbackMethod = "getDefaultAllCustomers")
     PagedModel<Customer> getAllCustomers();
 
     default Customer getDefaultCustomer(Long id, Exception exception) {
@@ -23,6 +24,10 @@ public interface CustomerRestClient {
                 .name("Default Name")
                 .email("Default Email")
                 .build();
+    }
+
+    default PagedModel<Customer> getDefaultAllCustomers(Exception exception) {
+        return PagedModel.empty();
     }
 
 }
